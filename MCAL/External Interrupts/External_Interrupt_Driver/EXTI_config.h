@@ -5,12 +5,16 @@
  *      Author: ASUS
  */
 
-// EXT1_config.h
+
 #ifndef EXTI_CONFIG_H_
 #define EXTI_CONFIG_H_
 
 
-/* will remain empty */
+
+/*
+ * THERE IS NO CONFIG.h BECAISE THE DRIVER CONFIGURED AS A POST BUILD CONGURATION
+ */
+
 
 
 

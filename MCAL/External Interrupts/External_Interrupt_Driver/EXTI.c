@@ -4,7 +4,7 @@
  *  Created on: Oct 22, 2023
  *      Author: ASUS
  */
-// EXT1.c
+
 
 #include "EXTI_priv.h"
 #include "EXTI_config.h"
