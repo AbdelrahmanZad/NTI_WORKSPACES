@@ -26,6 +26,8 @@
  * Description :
  * Get the Keypad pressed button
  */
+
+void KEYPAD_init (void);
 u8 KEYPAD_getPressedKey(void);
 
 

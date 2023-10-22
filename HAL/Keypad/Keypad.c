@@ -12,47 +12,59 @@
 
 
 
-
-u8 KEYPAD_getPressedKey (void)
-{
-	u8 col,row;
+void KEYPAD_init() {
 
 	// Configure all keypad pins as Input Pins
-	DIO_voidSetPinDirection(KEYPAD_ROW_PORT_ID, KEYPAD_FIRST_ROW_PIN_ID, PIN_INPUT);
-	DIO_voidSetPinDirection(KEYPAD_ROW_PORT_ID, KEYPAD_FIRST_ROW_PIN_ID-1, PIN_INPUT);
-	DIO_voidSetPinDirection(KEYPAD_ROW_PORT_ID, KEYPAD_FIRST_ROW_PIN_ID-2, PIN_INPUT);
-	DIO_voidSetPinDirection(KEYPAD_ROW_PORT_ID, KEYPAD_FIRST_ROW_PIN_ID-3, PIN_INPUT);
+		DIO_voidSetPinDirection(KEYPAD_ROW_PORT_ID, KEYPAD_FIRST_ROW_PIN_ID,PIN_INPUT);
+		DIO_voidSetPinDirection(KEYPAD_ROW_PORT_ID, KEYPAD_FIRST_ROW_PIN_ID-1,PIN_INPUT);
+		DIO_voidSetPinDirection(KEYPAD_ROW_PORT_ID, KEYPAD_FIRST_ROW_PIN_ID-2,PIN_INPUT);
+		DIO_voidSetPinDirection(KEYPAD_ROW_PORT_ID, KEYPAD_FIRST_ROW_PIN_ID-3,PIN_INPUT);
 
-	DIO_voidSetPinDirection(KEYPAD_COL_PORT_ID, KEYPAD_FIRST_COL_PIN_ID, PIN_INPUT);
-	DIO_voidSetPinDirection(KEYPAD_COL_PORT_ID, KEYPAD_FIRST_COL_PIN_ID-1, PIN_INPUT);
-	DIO_voidSetPinDirection(KEYPAD_COL_PORT_ID, KEYPAD_FIRST_COL_PIN_ID-2, PIN_INPUT);
-	DIO_voidSetPinDirection(KEYPAD_COL_PORT_ID, KEYPAD_FIRST_COL_PIN_ID-4, PIN_INPUT);
+		DIO_voidSetPinDirection(KEYPAD_COL_PORT_ID, KEYPAD_FIRST_COL_PIN_ID,PIN_OUTPUT);
+		DIO_voidSetPinDirection(KEYPAD_COL_PORT_ID, KEYPAD_FIRST_COL_PIN_ID-1,PIN_OUTPUT);
+		DIO_voidSetPinDirection(KEYPAD_COL_PORT_ID, KEYPAD_FIRST_COL_PIN_ID-2,PIN_OUTPUT);
+		DIO_voidSetPinDirection(KEYPAD_COL_PORT_ID, KEYPAD_FIRST_COL_PIN_ID-4,PIN_OUTPUT);
 
-	while(1)
-	{
-		for(row=0 ; row<4 ; row++) /* loop for rows */
-		{
-			/*
-			 * Each time setup the direction for all keypad port as input pins,
-			 * except this row will be output pin
-			 */
-			DIO_voidSetPinDirection(KEYPAD_ROW_PORT_ID,KEYPAD_FIRST_ROW_PIN_ID+row,PIN_OUTPUT);
 
-			/* Set/Clear the row output pin */
-			DIO_voidSetPinValue(KEYPAD_ROW_PORT_ID, KEYPAD_FIRST_ROW_PIN_ID+row, KEYPAD_BUTTON_PRESSED);
+		// MAKE THE COLOUMS OUTPUT IS HIGH  INITIALLY
+		DIO_voidSetPinValue (KEYPAD_COL_PORT_ID, KEYPAD_FIRST_COL_PIN_ID,LOGIC_HIGH);
+		DIO_voidSetPinValue (KEYPAD_COL_PORT_ID, KEYPAD_FIRST_COL_PIN_ID-1,LOGIC_HIGH);
+		DIO_voidSetPinValue (KEYPAD_COL_PORT_ID, KEYPAD_FIRST_COL_PIN_ID-2,LOGIC_HIGH);
+		DIO_voidSetPinValue (KEYPAD_COL_PORT_ID, KEYPAD_FIRST_COL_PIN_ID-4,LOGIC_HIGH);
 
-			for(col=0 ; col<4 ; col++) /* loop for columns */
-			{
-				/* Check if the switch is pressed in this column */
-				if(DIO_voidGetPinValue(KEYPAD_COL_PORT_ID,KEYPAD_FIRST_COL_PIN_ID+col) == KEYPAD_BUTTON_PRESSED)
-				{
-					return ((row*KEYPAD_NUM_COLS)+col+1);
-				}
-			}
-			DIO_voidSetPinDirection(KEYPAD_ROW_PORT_ID,KEYPAD_FIRST_ROW_PIN_ID+row,PIN_INPUT);
-		}
-	}
+		// Make ROWS BY DEFAULT AS A PULL-UP
+		DIO_voidSetPinValue (KEYPAD_ROW_PORT_ID, KEYPAD_FIRST_ROW_PIN_ID,LOGIC_HIGH);
+		DIO_voidSetPinValue (KEYPAD_ROW_PORT_ID, KEYPAD_FIRST_ROW_PIN_ID-1,LOGIC_HIGH);
+		DIO_voidSetPinValue (KEYPAD_ROW_PORT_ID, KEYPAD_FIRST_ROW_PIN_ID-2,LOGIC_HIGH);
+		DIO_voidSetPinValue (KEYPAD_ROW_PORT_ID, KEYPAD_FIRST_ROW_PIN_ID-4,LOGIC_HIGH);
+
+
+
 }
 
+u8 KEYPAD_getPressedKey(void)
+{
+		u8 r, c, key_value = 0xFF;
+		u8 row[4] = {5, 4, 3, 2}, col[4] = {3,5,6,7};
+
+		for (c = 0; c < 4; c++) {
+
+			DIO_voidSetPinValue(PORTD, col[c], LOGIC_LOW);
+
+			for (r = 0; r < 4; r++) {
+
+				if (DIO_voidGetPinValue(PORTC, row[r]) == 0) {
+																	// Key is pressed
+					key_value = ((r*4)+c+1);
+																	// Debouncing delay
+					while (DIO_voidGetPinValue(PORTC, row[r]) == 0);
+				}
+			}
+			// Set the column back to HIGH for the next iteration
+			DIO_voidSetPinValue(PORTD, col[c], LOGIC_HIGH);
+		}
+
+		return key_value;
 
 
+}
