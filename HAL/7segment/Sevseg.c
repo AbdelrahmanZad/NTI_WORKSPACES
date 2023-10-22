@@ -6,7 +6,7 @@
  */
 
 
-#include "GPIO_Driver.h"
+#include "gpio.h"
 #include "Sevseg.h"
 
 void Sevseg_Init() {
@@ -96,9 +96,9 @@ void Sevseg_num(u8 num) {
 			break;
 		case 9 :
 			DIO_voidSetPinValue(PORTB,0,LOGIC_HIGH);  //assign the values according to decoder table
-			DIO_voidSetPinValue(PORTB,1,LOGIC_HIGH);
+			DIO_voidSetPinValue(PORTB,1,LOGIC_LOW);
 			DIO_voidSetPinValue(PORTB,2,LOGIC_LOW);
-			DIO_voidSetPinValue(PORTB,4,LOGIC_LOW);
+			DIO_voidSetPinValue(PORTB,4,LOGIC_HIGH);
 			break;
 
 			default:
